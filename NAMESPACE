@@ -1,3 +1,4 @@
-export(jQCloud)
+S3method(print,jQCloud)
 export(jQCloudOutput)
 export(renderJQCloud)
+exportClasses(jQCloud)

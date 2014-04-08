@@ -3,13 +3,11 @@ Title: R wrapper for jQCloud
 Description: jQCloud is a jQuery plugin that builds neat and pure HTML + CSS
     word clouds and tag clouds. This is a wrapper to create html word cloud. It
     can be also used in shiny.
-Version: 0.1
+Version: 0.2
 Author: Gao Chen
 Maintainer: Gao Chen <frank85chen@gmail.com>
 Depends:
     R (>= 3.0.1)
 License: GPL-2
 LazyData: true
-Date: 2014-03-03
-Collate:
-    'jQCloud.R'
+Date: 2014-04-09

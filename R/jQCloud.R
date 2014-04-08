@@ -1,69 +1,31 @@
-#PACKAGE.DIR <- '/Users/frank/Projects/codebase/jqcloud'
-
 #' @export
 jQCloud <- setRefClass(
   'jQCloud',
-  fields = list(opt='list'),
+  fields = list(wordOptions='list', cloudOptions='list'),
   methods = list(
-    initialize = function(x = NULL) {
-      opt <<- if (is.null(x)) list() else x
-#      opt$id <<- NULL
-      opt$data <<- NULL
-      opt$height <<- 200L
-      opt$width <<- 200L
+    initialize = function(word.options=list(), cloud.options=list()) {
+      wordOptions <<- word.options
+      cloudOptions <<- cloud.options
     },
-#    id = function(x) {
-#      opt$id <<- x
-#    },
-    data = function(x) {
-      opt$data <<- x
+    setWordOptions = function(word.options) {
+      wordOptions <<- word.options
     },
-    height = function(x) {
-      if (x < 0) {
-        stop('"x" must >= 0')
-      }
-      opt$height <<- as.integer(x)
-    },
-    width = function(x) {
-      if (x < 0) {
-        stop('"x" must >= 0')
-      }
-      opt$width <<- as.integer(x)
-    },
-    html = function(id=NULL) {
-      if (is.null(id)) {
-        id <- tempfile(tmpdir='', pattern='id')
-        id <- substr(id, 2, nchar(id))
-      }
-      html.str <- sprintf('
-        <div id="%1$s"></div>
-        <script type="text/javascript">
-          (function($) {
-            $(function() {
-              $("#%s").height("%dpx").width("%dpx").jQCloud(%s);
-            });
-          })(jQuery);
-        </script>', id, opt$height, opt$width, RJSONIO::toJSON(opt$data))
-      return(html.str)
-    },
-    show = function() {
-      assign('.jQCloud.object', .self$copy(), envir=.GlobalEnv)
-      #shiny::runApp(file.path(PACKAGE.DIR, 'shiny'))
-      shiny::runApp(system.file('shiny', package='rJQCloud'))
-    })
+    setCloudOptions = function(cloud.options) {
+      cloudOptions <<- cloud.options
+    }
+  )
 )
 
 #' @export
 jQCloudOutput <- function(outputId) {
-  #singleton(addResourcePath('jqcloud', file.path(PACKAGE.DIR, 'inst')))
   singleton(addResourcePath('jqcloud', system.file(package='rJQCloud')))
-  div(class='jQCloud',
-      tagList(singleton(tags$head(
-          tags$script(src='jqcloud/js/jquery-1.11.0.min.js', type='text/javascript'),
-          tags$script(src='jqcloud/js/jqcloud-1.0.4.min.js', type='text/javascript'),
-          tags$link(rel='stylesheet', type='text/css', href='jqcloud/css/jqcloud.css')
-        ))),
-      htmlOutput(outputId)
+  tags$div(id=outputId, class='jqcloud-output',
+    tagList(singleton(tags$head(
+      tags$script(src='jqcloud/js/jquery-1.11.0.min.js', type='text/javascript'),
+      tags$script(src='jqcloud/js/jqcloud-1.0.4.min.js', type='text/javascript'),
+      tags$script(src='jqcloud/js/jqcloud_binding.js', type='text/javascript'),
+      tags$link(href='jqcloud/css/jqcloud.css', type='text/css', rel='stylesheet')
+    )))
   )
 }
 
@@ -73,6 +35,29 @@ renderJQCloud <- function(expr, env=parent.frame(), quoted=FALSE) {
 
   function() {
     g <- func()
-    g$html()
+    if (!inherits(g, 'jQCloud')) {
+      stop('renderJQCloud() need a return value of class "jQCloud"!')
+    }
+    word.options <- g$wordOptions
+    cloud.options <- if (length(g$cloudOptions) == 0L) emptyNamedList else g$cloudOptions
+    list(wordOptions=word.options, cloudOptions=cloud.options)
   }
+}
+
+#' @export
+print.jQCloud <- function(x) {
+  if (!require(shiny)) {
+    stop('"shiny" package not found!')
+  }
+
+  runApp(
+    list(
+      ui = bootstrapPage(jQCloudOutput('show')),
+      server = function(input, output) {
+        output$show <- renderJQCloud({
+          x
+        })
+      }
+    )
+  )
 }

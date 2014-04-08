@@ -1,4 +1,5 @@
-source('../R/jQCloud.R')
+library(rJQCloud)
+
 dat <- list(
   list(text='Lorem', weight=15),
   list(text='Ipsum', weight=9, link='http://jquery.com/'),
@@ -7,8 +8,8 @@ dat <- list(
   list(text='Amet', weight=5),
   list(text='新闻', weight=12, html=list(class='news', title='新闻标题'), link='http://weibo.com')
 )
-a <- jQCloud$new()
-a$data(dat)
-a$height(400)
-a$width(400)
+opt <- list(width=500, height=500)
+a <- rJQCloud:::jQCloud$new(dat, opt)
 print(a)
+
+
