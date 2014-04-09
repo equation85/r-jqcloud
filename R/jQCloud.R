@@ -3,7 +3,7 @@ jQCloud <- setRefClass(
   'jQCloud',
   fields = list(wordOptions='list', cloudOptions='list'),
   methods = list(
-    initialize = function(word.options=list(), cloud.options=list()) {
+    initialize = function(word.options=list(), cloud.options=list(width=500, height=500)) {
       wordOptions <<- word.options
       cloudOptions <<- cloud.options
     },

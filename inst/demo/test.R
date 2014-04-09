@@ -8,8 +8,7 @@ dat <- list(
   list(text='Amet', weight=5),
   list(text='新闻', weight=12, html=list(class='news', title='新闻标题'), link='http://weibo.com')
 )
-opt <- list(width=500, height=500)
-a <- rJQCloud:::jQCloud$new(dat, opt)
+a <- rJQCloud:::jQCloud$new(dat)
 print(a)
 
 
